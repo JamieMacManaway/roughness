@@ -28,9 +28,7 @@ def get_data(tiles):
         url = tile
         cmd = [
             "wget",
-            "-r", "-N", "-nH", "-np",
-            "-R", "index.html*",
-            "--cut-dirs=3",
+            "-N",
             "-P", folder,
             url
         ]
@@ -40,6 +38,7 @@ def get_data(tiles):
 get_data(tiles)
 
 # function to check that downloaded files are complete and uncorrupted
+# If any files corrupted, runs the download function again to ensure completeness of dataset
 def check_tar_integrity(tar_path):
     try:
         with tarfile.open(tar_path, "r:*") as tar:
@@ -57,8 +56,6 @@ def check_tar_integrity(tar_path):
         get_data(tiles)
 
 # Iterate through all .tar files in the directory and check their integrity
-# If any files corrupted, run the script again to ensure completeness of dataset
-# TODO automate the process so that if any files are corrupted, the get_data function runs again until the dataset is complete
 for tar_file in folder.rglob('*'):
     if tar_file.suffix in [".tar", ".gz"]:  # Check for .tar or .gz files
         print(f"Checking {tar_file.name}...")
