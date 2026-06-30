@@ -1,4 +1,5 @@
 from pathlib import Path
+import geopandas as gpd
 import tarfile
 
 # read in the greenland boundary, ice sheet and ArcticDEM mosaic index shapefiles
