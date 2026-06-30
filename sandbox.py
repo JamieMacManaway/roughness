@@ -18,12 +18,12 @@ gland_index = index[index.intersects(periphery.union_all())]
 tiles = list(gland_index['fileurl'])
 
 # take a subset of the list for testing
-short = [tiles[:3]]
+short = tiles[:3]
 short
 
 # specify a folder in which to save downloaded ArcticDEM tiles
-folder = Path('data/rasters/greenland/tars')
-folder.mkdir(parents=True, exist_ok=True)
+tar_folder = Path('data/rasters/greenland/tars')
+tar_folder.mkdir(parents=True, exist_ok=True)
 
 # function which downloads the tiles of interest into the previously specified folder, only if they don't already exist
 def get_data(tiles):
@@ -32,7 +32,7 @@ def get_data(tiles):
         cmd = [
             "wget",
             "-N",
-            "-P", folder,
+            "-P", tar_folder,
             url
         ]
         subprocess.run(cmd, check=True)
@@ -45,7 +45,7 @@ dem_folder = Path('data/rasters/greenland/dems')
 dem_folder.mkdir(parents=True, exist_ok=True)
 
 # iterate through the tar files and unpack the dems into the previously specified folder
-for tar_file in folder.iterdir():
+for tar_file in tar_folder.iterdir():
     with tarfile.open(tar_file, 'r') as tar:
         members = tar.getmembers()
         for member in members:
