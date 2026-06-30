@@ -1,2 +1,4 @@
 # ignore the data folder
 /data
+# also ignore the sandbox
+/sandbox
