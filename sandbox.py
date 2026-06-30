@@ -1,6 +1,7 @@
 from pathlib import Path
 import geopandas as gpd
 import tarfile
+import subprocess
 
 # read in the greenland boundary, ice sheet and ArcticDEM mosaic index shapefiles
 boundary = gpd.read_file('data/vectors/greenland/GRL_adm0.shp').to_crs(epsg=3413)
