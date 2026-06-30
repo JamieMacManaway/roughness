@@ -19,8 +19,8 @@ gland_index = index[index.intersects(periphery.union_all())]
 tiles = list(gland_index['fileurl'])
 
 # specify a folder in which to save downloaded ArcticDEM tiles
-folder = Path('data/rasters/greenland/tars')
-folder.mkdir(parents=True, exist_ok=True)
+tar_folder = Path('data/rasters/greenland/tars')
+tar_folder.mkdir(parents=True, exist_ok=True)
 
 # function which downloads the tiles of interest into the previously specified folder, only if they don't already exist
 def get_data(tiles):
@@ -29,7 +29,7 @@ def get_data(tiles):
         cmd = [
             "wget",
             "-N",
-            "-P", folder,
+            "-P", tar_folder,
             url
         ]
         subprocess.run(cmd, check=True)
@@ -56,7 +56,7 @@ def check_tar_integrity(tar_path):
         get_data(tiles)
 
 # Iterate through all .tar files in the directory and check their integrity
-for tar_file in folder.rglob('*'):
+for tar_file in tar_folder.rglob('*'):
     if tar_file.suffix in [".tar", ".gz"]:  # Check for .tar or .gz files
         print(f"Checking {tar_file.name}...")
         check_tar_integrity(tar_file)
