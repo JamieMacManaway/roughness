@@ -13,13 +13,13 @@ index = gpd.read_file('data/vectors/greenland/ArcticDEM_Mosaic_Index_v4_1_2m.shp
 periphery = boundary.overlay(ice_sheet, how='difference')
 
 # locate tiles from the index which correspond to the periphery
-gland_index = index[index.intersects(land.union_all())]
+gland_index = index[index.intersects(periphery.union_all())]
 
 # extract corresponding urls for tiles of interest 
 tiles = list(gland_index['fileurl'])
 
-# specify a folder in which to save ArcticDEM tiles
-folder = Path('data/rasters/greenland/dems')
+# specify a folder in which to save downloaded ArcticDEM tiles
+folder = Path('data/rasters/greenland/tars')
 folder.mkdir(parents=True, exist_ok=True)
 
 # function which downloads the tiles of interest into the previously specified folder, only if they don't already exist
