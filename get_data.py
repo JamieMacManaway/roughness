@@ -7,6 +7,7 @@ from osgeo import gdal
 import shutil
 
 # read in the greenland boundary, ice sheet and ArcticDEM mosaic index shapefiles
+print('')
 print('Reading in data and identifying area of interest...')
 print('')
 boundary = gpd.read_file('data/vectors/greenland/GRL_adm0.shp').to_crs(epsg=3413)
@@ -42,10 +43,7 @@ def get_data(tiles):
         subprocess.run(cmd, check=True)
 
 # run the function and download the tiles of interest
-# get_data(tiles) #commented out for testing
-
-short = tiles[:3]
-get_data(short)
+get_data(tiles)
 
 # function to check that downloaded files are complete and uncorrupted
 # If any files corrupted, runs the download function again to ensure completeness of dataset
@@ -68,9 +66,10 @@ def check_tar_integrity(tar_path):
 # Iterate through all .tar files in the directory and check their integrity
 print('')
 print('Checking downloaded tar files...')
-print('')
+
 for tar_file in tar_folder.rglob('*'):
     if tar_file.suffix in [".tar", ".gz"]:  # Check for .tar or .gz files
+        print('')
         print(f"Checking {tar_file.name}...")
         check_tar_integrity(tar_file)
 print('')
@@ -91,9 +90,10 @@ for tar_file in tar_folder.iterdir():
         members = tar.getmembers()
         for member in members:
             if 'dem.tif' in member.name:
-                unpacked = unpacked_folder / member.name
+                unpacked = dem_folder / member.name
                 if unpacked.exists():
                     print(f'{member.name} already unpacked. Skipping...')
+                    print('')
                     continue
                 else:
                     print(f'unpacking {member.name}...')
@@ -101,6 +101,7 @@ for tar_file in tar_folder.iterdir():
                     options = ['COMPRESS=DEFLATE']
                     gdal.Translate(dem_folder / member.name, unpacked, creationOptions=options)
                     print(f'{member.name} unpacked successfully')
+                    print('')
 
 print('')
 print('Tidying up...')
@@ -109,3 +110,4 @@ print('')
 # remove the interim folder
 shutil.rmtree(unpacked_folder)
 print('Greenland data ready for further analysis. \U0001F680')
+print('')
