@@ -4,6 +4,7 @@ from pathlib import Path
 import geopandas as gpd
 import tarfile
 from osgeo import gdal
+import shutil
 
 # read in the greenland boundary, ice sheet and ArcticDEM mosaic index shapefiles
 boundary = gpd.read_file('data/vectors/greenland/GRL_adm0.shp').to_crs(epsg=3413)
@@ -79,29 +80,15 @@ for tar_file in tar_folder.iterdir():
         members = tar.getmembers()
         for member in members:
             if 'dem.tif' in member.name:
-                print(f'unpacking {member.name}')
-                dem = tar.extract(member, path=unpacked_folder)
-                deflater = gdal.Open(dem)
-                options = ['COMPRESS=DEFLATE']
-                gdal.Translate(dem_folder / member.name, deflater, creationOptions=options)
-                print(f'{member.name} unpacked successfully')
+                unpacked = unpacked_folder / member.name
+                if unpacked.exists():
+                    print(f'{member.name} already unpacked. Skipping...')
+                    continue
+                else:
+                    print(f'unpacking {member.name}...')
+                    tar.extract(member, path=unpacked_folder)
+                    options = ['COMPRESS=DEFLATE']
+                    gdal.Translate(dem_folder / member.name, unpacked, creationOptions=options)
+                    print(f'{member.name} unpacked successfully')
 
-    #     tif_files = list(Path(input_dir).rglob("*dem.tif"))
-    # for resolution in resolutions:
-    #     for tif_file in tif_files:
-    #         if f'_{resolution}_' in tif_file.name:
-    #             resolution_dir = destination_folder / resolution
-    #             resolution_dir.mkdir(parents=True, exist_ok=True)  # Ensure folder exists
-    #             target_path = resolution_dir / tif_file.name
-                
-    #             # Open the input file
-    #             ds = gdal.Open(tif_file)
-                
-    #             # Define the output options, including deflation
-    #             options = ['COMPRESS=DEFLATE']
-                
-    #             # Create the output file with the same data but with deflation
-    #             gdal.Translate(target_path, ds, creationOptions=options)
-
-    #             #tif_file.rename(target_path)
-    #             print(f"Moved {tif_file} to {target_path}")
+shutil.rmtree(unpacked_folder)
