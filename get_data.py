@@ -8,6 +8,7 @@ import shutil
 
 # read in the greenland boundary, ice sheet and ArcticDEM mosaic index shapefiles
 print('Reading in data and identifying area of interest...')
+print('')
 boundary = gpd.read_file('data/vectors/greenland/GRL_adm0.shp').to_crs(epsg=3413)
 ice_sheet = gpd.read_file('data/vectors/greenland/GRE_IceSheet_IMBIE2_v1.shp').to_crs(epsg=3413)
 index = gpd.read_file('data/vectors/greenland/ArcticDEM_Mosaic_Index_v4_1_2m.shp').to_crs(epsg=3413)
@@ -20,7 +21,9 @@ gland_index = index[index.intersects(periphery.union_all())]
 
 # extract corresponding urls for tiles of interest 
 tiles = list(gland_index['fileurl'])
+print('')
 print('Found the relevant tiles. Downloading now...')
+print('')
 
 # specify a folder in which to save downloaded ArcticDEM tiles
 tar_folder = Path('data/rasters/greenland/tars')
@@ -63,12 +66,16 @@ def check_tar_integrity(tar_path):
         get_data(tiles)
 
 # Iterate through all .tar files in the directory and check their integrity
+print('')
 print('Checking downloaded tar files...')
+print('')
 for tar_file in tar_folder.rglob('*'):
     if tar_file.suffix in [".tar", ".gz"]:  # Check for .tar or .gz files
         print(f"Checking {tar_file.name}...")
         check_tar_integrity(tar_file)
+print('')
 print('All tars downloaded successfully. Preparing to unpack dems...')
+print('')
 
 # create a new folder into which the dems will be unpacked
 unpacked_folder = Path('data/rasters/greenland/unpacked')
@@ -95,5 +102,10 @@ for tar_file in tar_folder.iterdir():
                     gdal.Translate(dem_folder / member.name, unpacked, creationOptions=options)
                     print(f'{member.name} unpacked successfully')
 
+print('')
+print('Tidying up...')
+print('')
+
+# remove the interim folder
 shutil.rmtree(unpacked_folder)
-print('Greenland data ready for further analysis.')
+print('Greenland data ready for further analysis. \U0001F680')
