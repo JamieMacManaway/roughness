@@ -14,8 +14,9 @@ boundary = gpd.read_file('data/vectors/greenland/GRL_adm0.shp').to_crs(epsg=3413
 ice_sheet = gpd.read_file('data/vectors/greenland/GRE_IceSheet_IMBIE2_v1.shp').to_crs(epsg=3413)
 index = gpd.read_file('data/vectors/greenland/ArcticDEM_Mosaic_Index_v4_1_2m.shp').to_crs(epsg=3413)
 
-# find area of Greenland surrounding the ice sheet
+# find area of Greenland surrounding the ice sheet and save as shapefile
 periphery = boundary.overlay(ice_sheet, how='difference')
+periphery.to_file('data/vectors/greenland/periphery.shp')
 
 # locate tiles from the index which correspond to the periphery
 gland_index = index[index.intersects(periphery.union_all())]
@@ -84,13 +85,17 @@ unpacked_folder.mkdir(parents=True, exist_ok=True)
 dem_folder = Path('data/rasters/greenland/dems')
 dem_folder.mkdir(parents=True, exist_ok=True)
 
-# iterate through the tar files and unpack the dems into the previously specified folder
+# read in peripheral land shapefile created earlier for clipping dem tiles
+periphery_shp = Path('data/vectors/greenland/periphery.shp')
+
+# iterate through the tar files and unpack the dems into the previously specified folder, 
+# clipping them to the area corresponding to the periphery of the ice sheet
 for tar_file in tar_folder.iterdir():
     with tarfile.open(tar_file, 'r') as tar:
         members = tar.getmembers()
         for member in members:
             if 'dem.tif' in member.name:
-                unpacked = dem_folder / member.name
+                unpacked = unpacked_folder / member.name
                 if unpacked.exists():
                     print(f'{member.name} already unpacked. Skipping...')
                     print('')
@@ -99,7 +104,10 @@ for tar_file in tar_folder.iterdir():
                     print(f'unpacking {member.name}...')
                     tar.extract(member, path=unpacked_folder)
                     options = ['COMPRESS=DEFLATE']
-                    gdal.Translate(dem_folder / member.name, unpacked, creationOptions=options)
+                    gdal.Warp(str(dem_folder / member.name), 
+                                str(unpacked), 
+                                cutlineDSName=str(periphery_shp), 
+                                creationOptions=options)
                     print(f'{member.name} unpacked successfully')
                     print('')
 
