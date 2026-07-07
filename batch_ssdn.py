@@ -7,38 +7,42 @@ from pathlib import Path
 wbt = WhiteboxTools()
 wbt.set_compress_rasters(True)
 
-scales = [15, 150, 1500, 3000] # change to the spatial scales of interest
+# define scales of interest
+scales = [15, 150, 1500, 3000]
 
-resolution = 5 # adjust according to the resolution of your dataset
+# define folders
+greenland_dems = Path('data/rasters/greenland/dems/')
+greenland_ssdns = Path('data/rasters/greenland/ssdn/')
+scotland_dems = Path('data/rasters/scotland/dems/')
+scotland_ssdns = Path('data/rasters/scotland/ssdn/')
 
-def process_raster(raster_path, output_folder):
+# define a function to process all dem tiles in the input folder
+# and save them in an output directory with subdirectories for each resolution
+# with window size determined by resolution of dataset
+def process_raster(input_folder, output_folder, resolution):
     output_folder.mkdir(parents=True, exist_ok=True)
-
     for scale in scales:
-        result = -(-scale//resolution)
-        window = str(result) if result % 2 != 0 else str(result +1)
+        window = scale // resolution
         scale_folder = output_folder / str(scale)
         scale_folder.mkdir(parents=True, exist_ok=True)
-        ssdn_path = scale_folder / raster_path.name
-        if not ssdn_path.exists():
-            wbt.spherical_std_dev_of_normals(str(raster_path), str(ssdn_path), filter=window)
-            print(f"ssdn done: {ssdn_path}")
-        else:
-            print(f"ssdn exists, skipping: {ssdn_path}")
+        for raster in input_folder.rglob('*.tif'):
+            ssdn_path = scale_folder / raster.name
+            if not ssdn_path.exists():
+                print('')
+                print(f'processing {raster}')
+                wbt.spherical_std_dev_of_normals(str(raster), str(ssdn_path), filter=window)
+                print(f"{raster} successfully processed.")
+            else:
+                print('')
+                print(f"{raster} already processed, skipping...")
 
-def batch_ssdn(input_root):
-    input_root = Path(input_root)
+print('processing greenland dems')
+process_raster(greenland_dems, greenland_ssdns)
+print('successfully processed all greenland dems')
+print('')
+print('processing scotland dems')
+process_raster(scotland_dems, scotland_ssdns)
+print('successfully processed all scotland dems')
+print('')
 
-    for folder in input_root.rglob("*"):
-        if folder.is_dir():
-            raster_files = folder.glob("*.tif")
-            output_folder = input_root / "SSDN"
-            for raster_path in raster_files:
-                process_raster(
-                    raster_path,
-                    output_folder
-                )
-    print("Batch processing complete.")
-
-input_folder = Path("/mnt/gpfs01/home/gy/gyjlm2/Project/Data/dems/Scotland/")
-batch_ssdn(input_folder)
+print('All dems successfully processed! \U0001F680')

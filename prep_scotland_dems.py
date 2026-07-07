@@ -39,4 +39,4 @@ print('')
 
 # remove extraneous directory
 shutil.rmtree(warp_folder)
-print('Scotland data ready for further analysis.')
+print('Scotland data ready for further analysis. \U0001F680')
