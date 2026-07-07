@@ -37,11 +37,11 @@ def process_raster(input_folder, output_folder, resolution):
                 print(f"{raster} already processed, skipping...")
 
 print('processing greenland dems')
-process_raster(greenland_dems, greenland_ssdns)
+process_raster(greenland_dems, greenland_ssdns, 2)
 print('successfully processed all greenland dems')
 print('')
 print('processing scotland dems')
-process_raster(scotland_dems, scotland_ssdns)
+process_raster(scotland_dems, scotland_ssdns, 5)
 print('successfully processed all scotland dems')
 print('')
 
