@@ -4,3 +4,5 @@
 /data
 # ignore the notebook
 #/sandbox.ipynb
+# ignore the running order
+/disorder_of_business

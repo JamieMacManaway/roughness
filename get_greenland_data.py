@@ -6,20 +6,13 @@ import tarfile
 from osgeo import gdal
 import shutil
 
-# read in the greenland boundary, ice sheet and ArcticDEM mosaic index shapefiles
-print('')
-print('Reading in data and identifying area of interest...')
-print('')
-boundary = gpd.read_file('data/vectors/greenland/GRL_adm0.shp').to_crs(epsg=3413)
-ice_sheet = gpd.read_file('data/vectors/greenland/GRE_IceSheet_IMBIE2_v1.shp').to_crs(epsg=3413)
+# read in the greenland periphery and ArcticDEM mosaic index shapefiles
+exposed_land = 'data/vectors/greenland/exposed_land.shp'
+periphery = gpd.read_file(exposed_land).to_crs(epsg=3413)
 index = gpd.read_file('data/vectors/greenland/ArcticDEM_Mosaic_Index_v4_1_2m.shp').to_crs(epsg=3413)
 
-# find area of Greenland surrounding the ice sheet and save as shapefile
-periphery = boundary.overlay(ice_sheet, how='difference')
-periphery.to_file('data/vectors/greenland/periphery.shp')
-
 # locate tiles from the index which correspond to the periphery
-gland_index = index[index.intersects(periphery.union_all())]
+gland_index = index.overlay(periphery, how='intersection')
 
 # extract corresponding urls for tiles of interest 
 tiles = list(gland_index['fileurl'])
@@ -85,9 +78,6 @@ unpacked_folder.mkdir(parents=True, exist_ok=True)
 dem_folder = Path('data/rasters/greenland/dems')
 dem_folder.mkdir(parents=True, exist_ok=True)
 
-# read in peripheral land shapefile created earlier for clipping dem tiles
-periphery_shp = Path('data/vectors/greenland/periphery.shp')
-
 # iterate through the tar files and unpack the dems into the previously specified folder, 
 # clipping them to the area corresponding to the periphery of the ice sheet
 for tar_file in tar_folder.iterdir():
@@ -106,7 +96,7 @@ for tar_file in tar_folder.iterdir():
                     options = ['COMPRESS=DEFLATE']
                     gdal.Warp(str(dem_folder / member.name), 
                                 str(unpacked), 
-                                cutlineDSName=str(periphery_shp), 
+                                cutlineDSName=exposed_land, 
                                 creationOptions=options)
                     print(f'{member.name} unpacked successfully')
                     print('')
