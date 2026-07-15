@@ -78,10 +78,10 @@ greenland_igneous['bedrock'] = 'igneous'
 greenland_metamorphic['bedrock'] = 'metamorphic'
 greenland_sedimentary['bedrock'] = 'sedimentary'
 
-greenland_bedrock = pd.concat([greenland_igneous, greenland_metamorphic, greenland_sedimentary])
+bedrock_greenland = pd.concat([greenland_igneous, greenland_metamorphic, greenland_sedimentary])
 
-greenland_bedrock.drop(['Header', 'Long_description', 'combined_text'], axis=1, inplace=True)
+bedrock_greenland.drop(['Header', 'Long_description', 'combined_text'], axis=1, inplace=True)
 
 # save datasets to file
-scotland_bedrock.to_file('data/vectors/scotland/bedrock.shp')
-greenland_bedrock.to_file('data/vectors/greenland/bedrock.shp')
+bedrock_scotland.to_file('data/vectors/scotland/bedrock.shp')
+bedrock_greenland.to_file('data/vectors/greenland/bedrock.shp')
