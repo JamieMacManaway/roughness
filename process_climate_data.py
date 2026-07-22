@@ -1,6 +1,13 @@
 # import required libraries
 import geopandas as gpd
 import rioxarray as rio
+from pathlib import Path
+
+# create output directories
+temp_folder = Path('data/rasters/greenland/climate/temperature')
+temp_folder.mkdir(parents=True, exist_ok=True)
+prcp_folder = Path('data/rasters/greenland/climate/precipitation')
+prcp_folder.mkdir(parents=True, exist_ok=True)
 
 # import climate datasets and national boundaries
 gland = gpd.read_file('data/vectors/greenland/GRL_adm0.shp').to_crs(epsg=4326)
@@ -40,8 +47,8 @@ gprcp = gprcp.rio.reproject("EPSG:3413")
 gprcp = gprcp.where(gprcp > 0)  # remove zero values for precipitation
 
 # write greenland data
-gtemp.rio.to_raster('data/rasters/greenland/temperature.tif')
-gprcp.rio.to_raster('data/rasters/greenland/precipitation.tif')
+gtemp.rio.to_raster('data/rasters/greenland/climate/temperature/temperature.tif')
+gprcp.rio.to_raster('data/rasters/greenland/climate/precipitation/precipitation.tif')
 
 # clip the UK datasets to the Scotland boundary
 stemp = s_temp.clip(sland)
