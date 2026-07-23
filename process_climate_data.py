@@ -3,11 +3,15 @@ import geopandas as gpd
 import rioxarray as rio
 from pathlib import Path
 
+print('\ncreating output directories')
+
 # create output directories
 temp_folder = Path('data/rasters/greenland/climate/temperature')
 temp_folder.mkdir(parents=True, exist_ok=True)
 prcp_folder = Path('data/rasters/greenland/climate/precipitation')
 prcp_folder.mkdir(parents=True, exist_ok=True)
+
+print('\nreading in datasets')
 
 # import climate datasets and national boundaries
 gland = gpd.read_file('data/vectors/greenland/GRL_adm0.shp').to_crs(epsg=4326)
@@ -17,6 +21,8 @@ prcp = rio.open_rasterio('data/rasters/greenland/climate/cru_ts4.09.1901.2024.pr
 sland = gpd.read_file('data/vectors/scotland/scotland.shp').to_crs(epsg=27700)
 s_temp = gpd.read_file('data/vectors/scotland/Monthly_Temperature_Observations_1991-2020.shp').to_crs(epsg=27700)
 s_prcp = gpd.read_file('data/vectors/scotland/Monthly_Precipitation_Observations_1991-2020.shp').to_crs(epsg=27700)
+
+print('\nprocessing greenland data')
 
 # assign the greenland shapefile CRS to climate data
 temp.rio.write_crs(gland.crs, inplace=True)
@@ -50,16 +56,20 @@ gprcp = gprcp.where(gprcp > 0)  # remove zero values for precipitation
 gtemp.rio.to_raster('data/rasters/greenland/climate/temperature/temperature.tif')
 gprcp.rio.to_raster('data/rasters/greenland/climate/precipitation/precipitation.tif')
 
+print('\nprocessing scotland data')
+
 # clip the UK datasets to the Scotland boundary
 stemp = s_temp.clip(sland)
 sprcp = s_prcp.clip(sland)
 
 # calculate mean temperature and total precipitation for each grid cell
 stemp_values = stemp.select_dtypes(include=['float64', 'int64']).columns
-stemp['mean'] = stemp[stemp_values].mean(axis=1)
+scot_temp = gpd.GeoDataFrame({'mean': stemp[stemp_values].mean(axis=1), 'geometry': stemp['geometry']})
 sprcp_values = sprcp.select_dtypes(include=['float64', 'int64']).columns
-sprcp['total'] = sprcp[sprcp_values].sum(axis=1)
+scot_prcp = gpd.GeoDataFrame({'total': sprcp[sprcp_values].sum(axis=1), 'geometry': sprcp['geometry']})
 
 # write scottish data to file
-sprcp.to_file('data/vectors/scotland/precipitation.shp')
-stemp.to_file('data/vectors/scotland/temperature.shp')
+scot_prcp.to_file('data/vectors/scotland/precipitation.shp')
+scot_temp.to_file('data/vectors/scotland/temperature.shp')
+
+print('\nall done!')
