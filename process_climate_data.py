@@ -11,8 +11,8 @@ prcp_folder.mkdir(parents=True, exist_ok=True)
 
 # import climate datasets and national boundaries
 gland = gpd.read_file('data/vectors/greenland/GRL_adm0.shp').to_crs(epsg=4326)
-temp = rio.open_rasterio('data/rasters/greenland/cru_ts4.09.1901.2024.tmp.dat.nc')
-prcp = rio.open_rasterio('data/rasters/greenland/cru_ts4.09.1901.2024.pre.dat.nc')
+temp = rio.open_rasterio('data/rasters/greenland/climate/cru_ts4.09.1901.2024.tmp.dat.nc')
+prcp = rio.open_rasterio('data/rasters/greenland/climate/cru_ts4.09.1901.2024.pre.dat.nc')
 
 sland = gpd.read_file('data/vectors/scotland/scotland.shp').to_crs(epsg=27700)
 s_temp = gpd.read_file('data/vectors/scotland/Monthly_Temperature_Observations_1991-2020.shp').to_crs(epsg=27700)

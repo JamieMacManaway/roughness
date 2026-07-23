@@ -84,7 +84,7 @@ scotland_final.drop(['geometry'], axis=1)
 scotland_final.to_parquet(output_folder / 'scotland.parquet')
 
 greenland_vector_folder = Path('data/vectors/greenland')
-greenland_vectors = ['bedrock.shp']
+greenland_vectors = ['bedrock.shp', 'landscape_classification.shp', ]
 
 greenland_final = sample_vector_layers(greenland_temperature, greenland_vector_folder, greenland_vectors)
 
