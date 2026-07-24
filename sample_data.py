@@ -30,8 +30,8 @@ def create_random_points(shape, num_points):
 print('\ngenerating points')
 
 # call the function for both areas
-scotland_points = create_random_points(scotland, 1000000)
-greenland_points = create_random_points(greenland, 4500000)
+scotland_points = create_random_points(scotland, 1000)
+greenland_points = create_random_points(greenland, 4500)
 
 # define a function to sample each point and store the value of a corresponding raster
 def extract_values(points, rasters, dataset):
@@ -86,7 +86,7 @@ def sample_vector_layers(points_gdf, vector_folder, vectors):
         # Add selected attributes to point layer
         for col in layer.columns:
             if col != "geometry":
-                enriched[f"{layer_name}_{col}"] = grouped[col].first() 
+                enriched[f"{layer_name}"] = grouped[col].first() 
 
     return enriched
 
@@ -98,7 +98,7 @@ scottish_vectors = ['temperature.shp', 'precipitation.shp', 'bedrock.shp', 'land
 
 scotland_final = sample_vector_layers(scotland_roughness3000, scottish_vector_folder, scottish_vectors)
 
-scotland_final.drop(['geometry'], axis=1)
+scotland_final.drop(['geometry'], axis=1, inplace=True)
 
 scotland_final.to_parquet(output_folder / 'scotland.parquet')
 
@@ -109,7 +109,7 @@ greenland_vectors = ['bedrock.shp', 'landscape classification.shp', 'time since 
 
 greenland_final = sample_vector_layers(greenland_temperature, greenland_vector_folder, greenland_vectors)
 
-greenland_final.drop(['geometry'], axis=1)
+greenland_final.drop(['geometry'], axis=1, inplace=True)
 
 greenland_final.to_parquet(output_folder / 'greenland.parquet')
 
