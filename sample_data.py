@@ -30,8 +30,8 @@ def create_random_points(shape, num_points):
 print('\ngenerating points')
 
 # call the function for both areas
-scotland_points = create_random_points(scotland, 1000)
-greenland_points = create_random_points(greenland, 4500)
+scotland_points = create_random_points(scotland, 1000000)
+greenland_points = create_random_points(greenland, 4500000)
 
 # define a function to sample each point and store the value of a corresponding raster
 def extract_values(points, rasters, dataset):
