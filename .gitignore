@@ -2,9 +2,3 @@
 /sandbox
 # ignore the data folder
 /data
-# ignore the notebook
-#/sandbox.ipynb
-# ignore the running order
-/disorder_of_business
-# ignore the output folder
-/Output
