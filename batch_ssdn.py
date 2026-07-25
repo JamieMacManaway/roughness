@@ -30,11 +30,15 @@ def process_raster(input_folder, output_folder, resolution):
             if not ssdn_path.exists():
                 print('')
                 print(f'processing {raster}')
+                print('')
                 wbt.spherical_std_dev_of_normals(str(raster), str(ssdn_path), filter=window)
+                print('')
                 print(f"{raster} successfully processed.")
+                print('')
             else:
                 print('')
                 print(f"{raster} already processed, skipping...")
+                print('')
 
 print('processing greenland dems')
 process_raster(greenland_dems, greenland_ssdns, 2)
@@ -46,3 +50,4 @@ print('successfully processed all scotland dems')
 print('')
 
 print('All dems successfully processed! \U0001F680')
+print('')
